@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <title>Dashboard Stok Barang - SAPX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
   <style>
     :root {
       --sapx-orange: #ED6723;
@@ -117,9 +124,9 @@
     }
 
     .refresh-btn {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       padding: 16px 32px;
       font-size: 16px;
       border-radius: 14px;
@@ -130,13 +137,12 @@
       cursor: pointer;
     }
 
-    .refresh-btn:hover {
-      background: var(--sapx-purple);
+    .refresh-btn i {
+      font-size: 18px;
     }
 
-    .refresh-icon {
-      width: 20px;
-      height: 20px;
+    .refresh-btn:hover {
+      background: var(--sapx-purple);
     }
 
     @media (max-width: 768px) {
@@ -174,7 +180,6 @@
     <img src="https://www.sap-express.id/assets/img/logo/sapx-logo-og-image.png" alt="SAPX Logo">
     <h1>Dashboard Stok Barang</h1>
   </div>
-
   <div class="subtitle">Realtime dari Google Spreadsheet</div>
 
   <div class="search">
@@ -198,12 +203,7 @@
 
   <div class="refresh-wrapper">
     <button id="refreshBtn" class="refresh-btn">
-      <svg class="refresh-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M4 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M20 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 15a7 7 0 0 0 12-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M19 9a7 7 0 0 0-12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <i class="fa-solid fa-rotate-right"></i>
       Refresh Data
     </button>
   </div>
@@ -223,7 +223,9 @@
       tbody.innerHTML = "";
 
       const filtered = data.filter(item =>
-        (item["Nama barang"] + item["Kode barang"]).toLowerCase().includes(filter.toLowerCase())
+        (item["Nama barang"] + item["Kode barang"])
+          .toLowerCase()
+          .includes(filter.toLowerCase())
       );
 
       if (filtered.length === 0) {
@@ -248,7 +250,6 @@
 
     function loadData() {
       loading.style.display = "block";
-
       fetch(DATA_URL)
         .then(res => res.json())
         .then(json => {
@@ -280,7 +281,9 @@
     startAutoRefresh();
 
     document.addEventListener("visibilitychange", () => {
-      document.visibilityState === "visible" ? startAutoRefresh() : stopAutoRefresh();
+      document.visibilityState === "visible"
+        ? startAutoRefresh()
+        : stopAutoRefresh();
     });
   </script>
 
