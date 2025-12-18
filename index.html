@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Dashboard Stok Barang - SAPX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     :root {
       --sapx-orange: #ED6723;
@@ -118,7 +117,10 @@
     }
 
     .refresh-btn {
-      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
       font-size: 16px;
       border-radius: 14px;
       border: none;
@@ -132,8 +134,9 @@
       background: var(--sapx-purple);
     }
 
-    .refresh-btn:hover {
-      opacity: 0.9;
+    .refresh-icon {
+      width: 20px;
+      height: 20px;
     }
 
     @media (max-width: 768px) {
@@ -141,7 +144,9 @@
         display: block;
       }
 
-      thead { display: none; }
+      thead {
+        display: none;
+      }
 
       tr {
         margin-bottom: 14px;
@@ -169,6 +174,7 @@
     <img src="https://www.sap-express.id/assets/img/logo/sapx-logo-og-image.png" alt="SAPX Logo">
     <h1>Dashboard Stok Barang</h1>
   </div>
+
   <div class="subtitle">Realtime dari Google Spreadsheet</div>
 
   <div class="search">
@@ -191,7 +197,15 @@
   <div id="loading" class="loading">Loading data...</div>
 
   <div class="refresh-wrapper">
-    <button id="refreshBtn" class="refresh-btn">🔄 Refresh Data</button>
+    <button id="refreshBtn" class="refresh-btn">
+      <svg class="refresh-icon" viewBox="0 0 24 24" fill="none">
+        <path d="M4 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 15a7 7 0 0 0 12-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M19 9a7 7 0 0 0-12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Refresh Data
+    </button>
   </div>
 
   <script>
@@ -209,9 +223,7 @@
       tbody.innerHTML = "";
 
       const filtered = data.filter(item =>
-        (item["Nama barang"] + item["Kode barang"])
-          .toLowerCase()
-          .includes(filter.toLowerCase())
+        (item["Nama barang"] + item["Kode barang"]).toLowerCase().includes(filter.toLowerCase())
       );
 
       if (filtered.length === 0) {
@@ -229,7 +241,8 @@
             <td data-label="Status">
               <span class="badge ${item["Status"]}">${item["Status"]}</span>
             </td>
-          </tr>`;
+          </tr>
+        `;
       });
     }
 
@@ -267,9 +280,7 @@
     startAutoRefresh();
 
     document.addEventListener("visibilitychange", () => {
-      document.visibilityState === "visible"
-        ? startAutoRefresh()
-        : stopAutoRefresh();
+      document.visibilityState === "visible" ? startAutoRefresh() : stopAutoRefresh();
     });
   </script>
 
