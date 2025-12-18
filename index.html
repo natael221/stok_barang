@@ -9,121 +9,127 @@
     :root {
       --sapx-orange: #ED6723;
       --sapx-purple: #85247F;
-      --sapx-purple-dark: #5E1A59;
-      --sapx-bg: #2a0f2a;
-      --sapx-card: #3b123a;
-      --sapx-text: #fdf2f8;
-      --sapx-muted: #f5c2d8;
+      --green: #16a34a;
+      --red: #dc2626;
+      --border: #e5e7eb;
+      --muted: #6b7280;
     }
 
     body {
       font-family: Inter, system-ui, sans-serif;
-      background: var(--sapx-bg);
-      color: var(--sapx-text);
+      background: #ffffff;
+      color: #111827;
       margin: 0;
       padding: 24px;
     }
 
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .header img {
+      height: 42px;
+    }
+
     h1 {
-      margin-bottom: 4px;
-      font-size: 28px;
-      color: var(--sapx-orange);
+      font-size: 24px;
+      margin: 0;
+      color: var(--sapx-purple);
     }
 
     .subtitle {
-      color: var(--sapx-muted);
+      color: var(--muted);
       margin-bottom: 20px;
     }
 
     .search {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     input {
       width: 100%;
       padding: 12px;
       border-radius: 10px;
-      border: none;
-      outline: none;
-      background: var(--sapx-purple-dark);
-      color: white;
+      border: 1px solid var(--border);
       font-size: 14px;
-    }
-
-    input::placeholder {
-      color: #f0aacb;
-    }
-
-    .refresh-btn {
-      margin-bottom: 16px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(135deg, var(--sapx-orange), var(--sapx-purple));
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .refresh-btn:hover {
-      opacity: 0.9;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--sapx-card);
-      border-radius: 14px;
+      background: #ffffff;
+      border-radius: 12px;
       overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     th, td {
       padding: 14px;
       text-align: left;
       font-size: 14px;
+      border-bottom: 1px solid var(--border);
     }
 
     th {
-      color: var(--sapx-muted);
+      background: #fafafa;
+      color: var(--muted);
       text-transform: uppercase;
       font-size: 12px;
       letter-spacing: 0.05em;
     }
 
-    tr {
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-
     tr:hover {
-      background: rgba(255,255,255,0.05);
+      background: #fafafa;
     }
 
     .badge {
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 999px;
       font-weight: 600;
       font-size: 12px;
-      display: inline-block;
     }
 
     .AVAILABLE {
-      background: rgba(237, 103, 35, 0.15);
-      color: var(--sapx-orange);
+      background: #dcfce7;
+      color: var(--green);
     }
 
     .UNAVAILABLE {
-      background: rgba(133, 36, 127, 0.35);
-      color: #fbd3ea;
+      background: #fee2e2;
+      color: var(--red);
     }
 
     .stock {
       font-weight: 700;
-      font-size: 15px;
     }
 
     .loading {
-      color: var(--sapx-muted);
+      color: var(--muted);
       margin-top: 12px;
+    }
+
+    .refresh-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .refresh-btn {
+      padding: 16px 28px;
+      font-size: 16px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--sapx-orange), var(--sapx-purple));
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .refresh-btn:hover {
+      opacity: 0.9;
     }
 
     @media (max-width: 768px) {
@@ -135,9 +141,9 @@
 
       tr {
         margin-bottom: 14px;
-        border-radius: 12px;
         padding: 12px;
-        background: var(--sapx-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
       }
 
       td {
@@ -148,21 +154,22 @@
 
       td::before {
         content: attr(data-label);
-        color: var(--sapx-muted);
+        color: var(--muted);
       }
     }
   </style>
 </head>
 <body>
 
-  <h1>📦 Dashboard Stok Barang</h1>
+  <div class="header">
+    <img src="sapx-logo.png" alt="SAPX Logo">
+    <h1>Dashboard Stok Barang</h1>
+  </div>
   <div class="subtitle">Realtime dari Google Spreadsheet</div>
 
   <div class="search">
     <input id="search" placeholder="Cari barang atau kode..." />
   </div>
-
-  <button id="refreshBtn" class="refresh-btn">🔄 Refresh Sekarang</button>
 
   <table>
     <thead>
@@ -178,6 +185,10 @@
   </table>
 
   <div id="loading" class="loading">Loading data...</div>
+
+  <div class="refresh-wrapper">
+    <button id="refreshBtn" class="refresh-btn">🔄 Refresh Data</button>
+  </div>
 
   <script>
     const DATA_URL = "https://script.google.com/macros/s/AKfycbz6LurKEWD4qFB7E6ECYmDa04g8p4Qe6RyV9sbUgnXOzkAaWL4h3e8LCZAjXi2EpjI2IA/exec";
