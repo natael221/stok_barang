@@ -2,14 +2,24 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard Stok Barang</title>
+  <title>Dashboard Stok Barang - SAPX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --sapx-orange: #ED6723;
+      --sapx-purple: #85247F;
+      --sapx-purple-dark: #5E1A59;
+      --sapx-bg: #2a0f2a;
+      --sapx-card: #3b123a;
+      --sapx-text: #fdf2f8;
+      --sapx-muted: #f5c2d8;
+    }
+
     body {
       font-family: Inter, system-ui, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
+      background: var(--sapx-bg);
+      color: var(--sapx-text);
       margin: 0;
       padding: 24px;
     }
@@ -17,15 +27,16 @@
     h1 {
       margin-bottom: 4px;
       font-size: 28px;
+      color: var(--sapx-orange);
     }
 
     .subtitle {
-      color: #94a3b8;
+      color: var(--sapx-muted);
       margin-bottom: 20px;
     }
 
     .search {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     input {
@@ -34,15 +45,34 @@
       border-radius: 10px;
       border: none;
       outline: none;
-      background: #020617;
+      background: var(--sapx-purple-dark);
       color: white;
       font-size: 14px;
+    }
+
+    input::placeholder {
+      color: #f0aacb;
+    }
+
+    .refresh-btn {
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--sapx-orange), var(--sapx-purple));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .refresh-btn:hover {
+      opacity: 0.9;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #020617;
+      background: var(--sapx-card);
       border-radius: 14px;
       overflow: hidden;
     }
@@ -54,19 +84,18 @@
     }
 
     th {
-      background: #020617;
-      color: #94a3b8;
+      color: var(--sapx-muted);
       text-transform: uppercase;
       font-size: 12px;
       letter-spacing: 0.05em;
     }
 
     tr {
-      border-bottom: 1px solid #020617;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     tr:hover {
-      background: #020617;
+      background: rgba(255,255,255,0.05);
     }
 
     .badge {
@@ -78,13 +107,13 @@
     }
 
     .AVAILABLE {
-      background: #064e3b;
-      color: #34d399;
+      background: rgba(237, 103, 35, 0.15);
+      color: var(--sapx-orange);
     }
 
     .UNAVAILABLE {
-      background: #450a0a;
-      color: #f87171;
+      background: rgba(133, 36, 127, 0.35);
+      color: #fbd3ea;
     }
 
     .stock {
@@ -93,7 +122,7 @@
     }
 
     .loading {
-      color: #94a3b8;
+      color: var(--sapx-muted);
       margin-top: 12px;
     }
 
@@ -102,15 +131,13 @@
         display: block;
       }
 
-      thead {
-        display: none;
-      }
+      thead { display: none; }
 
       tr {
         margin-bottom: 14px;
         border-radius: 12px;
         padding: 12px;
-        background: #020617;
+        background: var(--sapx-card);
       }
 
       td {
@@ -121,7 +148,7 @@
 
       td::before {
         content: attr(data-label);
-        color: #94a3b8;
+        color: var(--sapx-muted);
       }
     }
   </style>
@@ -134,6 +161,8 @@
   <div class="search">
     <input id="search" placeholder="Cari barang atau kode..." />
   </div>
+
+  <button id="refreshBtn" class="refresh-btn">🔄 Refresh Sekarang</button>
 
   <table>
     <thead>
@@ -151,99 +180,83 @@
   <div id="loading" class="loading">Loading data...</div>
 
   <script>
-  // ============================
-  // CONFIG
-  // ============================
-  const DATA_URL = "https://script.google.com/macros/s/AKfycbz6LurKEWD4qFB7E6ECYmDa04g8p4Qe6RyV9sbUgnXOzkAaWL4h3e8LCZAjXi2EpjI2IA/exec";
+    const DATA_URL = "https://script.google.com/macros/s/AKfycbz6LurKEWD4qFB7E6ECYmDa04g8p4Qe6RyV9sbUgnXOzkAaWL4h3e8LCZAjXi2EpjI2IA/exec";
 
-  // ============================
-  // STATE
-  // ============================
-  let data = [];
-  let intervalId = null;
+    let data = [];
+    let intervalId = null;
 
-  const tbody = document.getElementById("table-body");
-  const search = document.getElementById("search");
-  const loading = document.getElementById("loading");
+    const tbody = document.getElementById("table-body");
+    const search = document.getElementById("search");
+    const loading = document.getElementById("loading");
+    const refreshBtn = document.getElementById("refreshBtn");
 
-  function render(filter = "") {
-    tbody.innerHTML = "";
+    function render(filter = "") {
+      tbody.innerHTML = "";
 
-    const filtered = data.filter(item =>
-      (item["Nama barang"] + item["Kode barang"])
-        .toLowerCase()
-        .includes(filter.toLowerCase())
-    );
+      const filtered = data.filter(item =>
+        (item["Nama barang"] + item["Kode barang"])
+          .toLowerCase()
+          .includes(filter.toLowerCase())
+      );
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5">Data tidak ditemukan</td></tr>`;
-      return;
-    }
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">Data tidak ditemukan</td></tr>`;
+        return;
+      }
 
-    filtered.forEach(item => {
-      tbody.innerHTML += `
-        <tr>
-          <td data-label="Kode">${item["Kode barang"]}</td>
-          <td data-label="Nama">${item["Nama barang"]}</td>
-          <td data-label="Stok" class="stock">${item["Stok sekarang"]}</td>
-          <td data-label="Satuan">${item["Satuan"]}</td>
-          <td data-label="Status">
-            <span class="badge ${item["Status"]}">
-              ${item["Status"]}
-            </span>
-          </td>
-        </tr>
-      `;
-    });
-  }
-
-  function loadData() {
-    loading.style.display = "block";
-
-    fetch(DATA_URL)
-      .then(res => res.json())
-      .then(json => {
-        data = json;
-        render(search.value);
-        loading.style.display = "none";
-      })
-      .catch(err => {
-        loading.textContent = "Gagal memuat data";
-        console.error(err);
+      filtered.forEach(item => {
+        tbody.innerHTML += `
+          <tr>
+            <td data-label="Kode">${item["Kode barang"]}</td>
+            <td data-label="Nama">${item["Nama barang"]}</td>
+            <td data-label="Stok" class="stock">${item["Stok sekarang"]}</td>
+            <td data-label="Satuan">${item["Satuan"]}</td>
+            <td data-label="Status">
+              <span class="badge ${item["Status"]}">${item["Status"]}</span>
+            </td>
+          </tr>`;
       });
-  }
-
-  search.addEventListener("input", e => render(e.target.value));
-
-  // ============================
-  // SMART AUTO REFRESH
-  // ============================
-  function startAutoRefresh() {
-    if (!intervalId) {
-      intervalId = setInterval(loadData, 10000); // 10 detik
     }
-  }
 
-  function stopAutoRefresh() {
-    if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
+    function loadData() {
+      loading.style.display = "block";
+
+      fetch(DATA_URL)
+        .then(res => res.json())
+        .then(json => {
+          data = json;
+          render(search.value);
+          loading.style.display = "none";
+        })
+        .catch(err => {
+          loading.textContent = "Gagal memuat data";
+          console.error(err);
+        });
     }
-  }
 
-  // Load pertama kali
-  loadData();
-  startAutoRefresh();
+    search.addEventListener("input", e => render(e.target.value));
+    refreshBtn.addEventListener("click", loadData);
 
-  // Deteksi tab aktif / tidak
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      startAutoRefresh();
-    } else {
-      stopAutoRefresh();
+    function startAutoRefresh() {
+      if (!intervalId) intervalId = setInterval(loadData, 10000);
     }
-  });
-</script>
+
+    function stopAutoRefresh() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    loadData();
+    startAutoRefresh();
+
+    document.addEventListener("visibilitychange", () => {
+      document.visibilityState === "visible"
+        ? startAutoRefresh()
+        : stopAutoRefresh();
+    });
+  </script>
 
 </body>
 </html>
