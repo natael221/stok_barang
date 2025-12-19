@@ -189,6 +189,7 @@
   <table>
     <thead>
       <tr>
+        <th>No</th>
         <th>Kode</th>
         <th>Nama Barang</th>
         <th>Stok</th>
@@ -223,25 +224,26 @@
       tbody.innerHTML = "";
 
       const filtered = data.filter(item =>
-        (item["NAMA BARANG"] + item["KODE ATK"])
+        (item["Nama barang"] + item["Kode barang"]) 
           .toLowerCase()
           .includes(filter.toLowerCase())
       );
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5">Data tidak ditemukan</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6">Data tidak ditemukan</td></tr>`;
         return;
       }
 
-      filtered.forEach(item => {
+      filtered.forEach((item, index) => {
         tbody.innerHTML += `
           <tr>
-            <td data-label="Kode">${item["KODE ATK"]}</td>
-            <td data-label="Nama">${item["NAMA BARANG"]}</td>
-            <td data-label="Stok" class="stock">${item["STOK REALTIME"]}</td>
-            <td data-label="Satuan">${item["KETERANGAN"]}</td>
+            <td data-label="No">${index + 1}</td>
+            <td data-label="Kode">${item["Kode barang"]}</td>
+            <td data-label="Nama">${item["Nama barang"]}</td>
+            <td data-label="Stok" class="stock">${item["Stok sekarang"]}</td>
+            <td data-label="Satuan">${item["Satuan"]}</td>
             <td data-label="Status">
-              <span class="badge ${item["STATUS"]}">${item["STATUS"]}</span>
+              <span class="badge ${item["Status"]}">${item["Status"]}</span>
             </td>
           </tr>
         `;
@@ -256,36 +258,3 @@
           data = json;
           render(search.value);
           loading.style.display = "none";
-        })
-        .catch(err => {
-          loading.textContent = "Gagal memuat data";
-          console.error(err);
-        });
-    }
-
-    search.addEventListener("input", e => render(e.target.value));
-    refreshBtn.addEventListener("click", loadData);
-
-    function startAutoRefresh() {
-      if (!intervalId) intervalId = setInterval(loadData, 10000);
-    }
-
-    function stopAutoRefresh() {
-      if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
-    }
-
-    loadData();
-    startAutoRefresh();
-
-    document.addEventListener("visibilitychange", () => {
-      document.visibilityState === "visible"
-        ? startAutoRefresh()
-        : stopAutoRefresh();
-    });
-  </script>
-
-</body>
-</html>
