@@ -223,7 +223,7 @@
       tbody.innerHTML = "";
 
       const filtered = data.filter(item =>
-        (item["Nama barang"] + item["Kode barang"])
+        (item["NAMA BARANG"] + item["KODE ATK"])
           .toLowerCase()
           .includes(filter.toLowerCase())
       );
@@ -236,12 +236,12 @@
       filtered.forEach(item => {
         tbody.innerHTML += `
           <tr>
-            <td data-label="Kode">${item["Kode barang"]}</td>
-            <td data-label="Nama">${item["Nama barang"]}</td>
-            <td data-label="Stok" class="stock">${item["Stok sekarang"]}</td>
-            <td data-label="Satuan">${item["Satuan"]}</td>
+            <td data-label="Kode">${item["KODE ATK"]}</td>
+            <td data-label="Nama">${item["NAMA BARANG"]}</td>
+            <td data-label="Stok" class="stock">${item["STOK REALTIME"]}</td>
+            <td data-label="Satuan">${item["KETERANGAN"]}</td>
             <td data-label="Status">
-              <span class="badge ${item["Status"]}">${item["Status"]}</span>
+              <span class="badge ${item["STATUS"]}">${item["STATUS"]}</span>
             </td>
           </tr>
         `;
